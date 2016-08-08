@@ -10,6 +10,10 @@
 /* eslint-disable max-len */
 /* jscs:disable maximumLineLength */
 
+import * as dotenv from 'dotenv';
+dotenv.load();
+
+
 export const port = process.env.PORT || 3000;
 export const host = process.env.WEBSITE_HOSTNAME || `localhost:${port}`;
 
@@ -34,8 +38,12 @@ export const auth = {
 
   // https://cloud.google.com/console/project
   google: {
-    id: process.env.GOOGLE_CLIENT_ID || '251410730550-ahcg0ou5mgfhl8hlui1urru7jn5s12km.apps.googleusercontent.com',
-    secret: process.env.GOOGLE_CLIENT_SECRET || 'Y8yR9yZAhm9jQ8FKAL8QIEcd',
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    projectID: 'blog-reboot',
+    authURI: 'https://accounts.google.com/o/oauth2/auth',
+    tokenURI: 'https://accounts.google.com/o/oauth2/token',
+    authProviderX509CertURL: 'https://www.googleapis.com/oauth2/v1/certs',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   },
 
   // https://apps.twitter.com/

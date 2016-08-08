@@ -15,12 +15,27 @@
 
 import passport from 'passport';
 import { Strategy as FacebookStrategy } from 'passport-facebook';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import db from './db';
 import { auth as config } from '../config';
+
 
 /**
  * Sign in with Facebook.
  */
+
+console.log(config.google);
+
+passport.use(new GoogleStrategy(
+  {
+    ...config.google,
+    callbackURL: 'login/google/return',
+  },
+  () => {
+
+  }
+));
+
 passport.use(new FacebookStrategy({
   clientID: config.facebook.id,
   clientSecret: config.facebook.secret,

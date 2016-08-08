@@ -22,8 +22,13 @@ import schema from './data/schema';
 import Router from './routes';
 import assets from './assets';
 import { port, auth, analytics } from './config';
+import { connectSync } from './core/db';
 
 const server = global.server = express();
+
+
+// Connect to mongodb
+connectSync();
 
 //
 // Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the
@@ -50,19 +55,40 @@ server.use(expressJwt({
   getToken: req => req.cookies.id_token,
   /* jscs:enable requireCamelCaseOrUpperCaseIdentifiers */
 }));
+
+const createToken = (req, res) => {
+  const expiresIn = 60 * 60 * 24 * 180; // 180 days
+  const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
+  res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
+  res.redirect('/');
+};
+
 server.use(passport.initialize());
 
 server.get('/login/facebook',
   passport.authenticate('facebook', { scope: ['email', 'user_location'], session: false })
 );
 server.get('/login/facebook/return',
-  passport.authenticate('facebook', { failureRedirect: '/login', session: false }),
-  (req, res) => {
-    const expiresIn = 60 * 60 * 24 * 180; // 180 days
-    const token = jwt.sign(req.user, auth.jwt.secret, { expiresIn });
-    res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-    res.redirect('/');
-  }
+  passport.authenticate(
+    'facebook',
+    { failureRedirect: '/login', session: false }
+  ),
+  createToken,
+);
+
+
+/**
+ * Sign in with Google.
+ */
+server.get('/login/google',
+  passport.authenticate('google', { scope: ['profile'], session: false }));
+
+server.get('/login/google/return',
+  passport.authenticate(
+    'google',
+    { failureRedirect: '/login' }
+  ),
+  createToken,
 );
 
 //

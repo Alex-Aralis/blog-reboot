@@ -18,23 +18,34 @@ import { Strategy as FacebookStrategy } from 'passport-facebook';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import db from './db';
 import { auth as config } from '../config';
-
-
-/**
- * Sign in with Facebook.
- */
-
-console.log(config.google);
+import { User } from './db/models';
+/*
+ * Sign in with Google
+*/
 
 passport.use(new GoogleStrategy(
   {
     ...config.google,
-    callbackURL: 'login/google/return',
+    callbackURL: '/login/google/return',
   },
-  () => {
+  (accessToken, refreshToken, profile, done) => {
+    // console.log(profile);
 
+    const user = new User({
+      ...profile,
+    });
+
+    user.save((err) => {
+      console.log(err);
+      console.log(user);
+      done(err, user);
+    });
   }
 ));
+
+/**
+ * Sign in with Facebook.
+ */
 
 passport.use(new FacebookStrategy({
   clientID: config.facebook.id,

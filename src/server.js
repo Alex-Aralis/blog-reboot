@@ -86,7 +86,7 @@ server.get('/login/google',
 server.get('/login/google/return',
   passport.authenticate(
     'google',
-    { failureRedirect: '/login' }
+    { failureRedirect: '/login', session: false }
   ),
   createToken,
 );

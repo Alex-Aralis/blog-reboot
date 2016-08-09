@@ -29,25 +29,42 @@ passport.use(new GoogleStrategy(
     callbackURL: '/login/google/return',
   },
   async (accessToken, refreshToken, originalProfile, done) => {
-    console.log('lskdjfsldf');
+   /*
+    * I'm not sure why I'm getting back an array with types for emails
+    * addresses, however I'm afraid of new things so I'm removing
+    * all the types I have not seen before.  Which is all but
+    * account.
+    */
+    let emails = originalProfile.emails
+      .filter(
+        email => email.type === 'account'
+      );
+
+    // only keep the acctual email addresses.
+    emails = emails.map(email => email.value);
+
     const profile = {
       ...originalProfile,
-      email: originalProfile.emails[0].value,
+      provider: {
+        name: originalProfile.provider,
+        id: originalProfile.id,
+      },
+
+      // only keep the first one because I only want one.
+      email: emails && emails.length && emails[0],
       imageURL: originalProfile._json.image.url,
+      language: originalProfile._json.language,
     };
 
-    console.log('before profile');
-    console.log(profile);
     const user = await User.findOne({
-      provider: profile.provider,
-      googleID: profile.id,
+      'provider.name': profile.provider.name,
+      'provider.id': profile.provider.id,
     });
 
     // user was found in db
     if (user) {
-      console.log('user found in db');
-      console.log(user);
-      done(null, user);
+      done(null, user.toObject());
+
     // user was not found in db
     } else {
       const newUser = new User({
@@ -56,10 +73,7 @@ passport.use(new GoogleStrategy(
 
       await newUser.save();
 
-      console.log('user created');
-      console.log(newUser);
-
-      done(null, newUser);
+      done(null, newUser.toObject());
     }
   }
 ));

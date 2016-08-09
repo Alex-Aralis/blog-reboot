@@ -2,6 +2,8 @@ import mongoose from 'mongoose';
 import { connection as db } from 'mongoose';
 require('dotenv').load();
 
+// set the default promise library for mongoose.
+mongoose.Promise = Promise;
 
 mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost/blogreboot');
 

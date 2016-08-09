@@ -81,7 +81,7 @@ server.get('/login/facebook/return',
  * Sign in with Google.
  */
 server.get('/login/google',
-  passport.authenticate('google', { scope: ['profile'], session: false }));
+  passport.authenticate('google', { scope: ['profile', 'email'], session: false }));
 
 server.get('/login/google/return',
   passport.authenticate(

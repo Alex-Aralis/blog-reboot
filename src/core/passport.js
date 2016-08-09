@@ -28,18 +28,36 @@ passport.use(new GoogleStrategy(
     ...config.google,
     callbackURL: '/login/google/return',
   },
-  (accessToken, refreshToken, profile, done) => {
-    // console.log(profile);
+  async (accessToken, refreshToken, originalProfile, done) => {
+    const profile = {
+      ...originalProfile,
+      email: originalProfile.emails[0].value,
+    };
 
-    const user = new User({
-      ...profile,
+    console.log(profile);
+    const user = await User.findOne({
+      provider: profile.provider,
+      googleID: profile.googleID,
     });
 
-    user.save((err) => {
-      console.log(err);
+    // user was found in db
+    if (user) {
+      console.log('user found in db');
       console.log(user);
-      done(err, user);
-    });
+      done(null, user);
+    // user was not found in db
+    } else {
+      const newUser = new User({
+        ...profile,
+      });
+
+      await newUser.save();
+
+      console.log('user created');
+      console.log(newUser);
+
+      done(null, newUser);
+    }
   }
 ));
 

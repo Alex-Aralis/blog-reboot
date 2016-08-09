@@ -29,15 +29,18 @@ passport.use(new GoogleStrategy(
     callbackURL: '/login/google/return',
   },
   async (accessToken, refreshToken, originalProfile, done) => {
+    console.log('lskdjfsldf');
     const profile = {
       ...originalProfile,
       email: originalProfile.emails[0].value,
+      imageURL: originalProfile._json.image.url,
     };
 
+    console.log('before profile');
     console.log(profile);
     const user = await User.findOne({
       provider: profile.provider,
-      googleID: profile.googleID,
+      googleID: profile.id,
     });
 
     // user was found in db

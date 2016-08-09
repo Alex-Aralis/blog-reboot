@@ -5,4 +5,5 @@ export const UserSchema = schema({
   dispalyName: String,
   email: String,
   id: String,
+  imageURL: String,
 });

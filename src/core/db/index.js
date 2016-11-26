@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 import { connection as db } from 'mongoose';
+import Promise from 'bluebird';
+
 require('dotenv').load();
 
 // set the default promise library for mongoose.

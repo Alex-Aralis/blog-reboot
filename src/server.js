@@ -105,6 +105,8 @@ server.use('/graphql', expressGraphQL(req => ({
 // Register server-side rendering middleware
 // -----------------------------------------------------------------------------
 server.get('*', async (req, res, next) => {
+  console.log(req.user);
+
   try {
     let statusCode = 200;
     const template = require('./views/index.jade');
